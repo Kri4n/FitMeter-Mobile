@@ -1,3 +1,4 @@
+import 'package:fitmeter_mobile/views/components/bottomnavbar.dart';
 import 'package:fitmeter_mobile/views/pages/home.dart';
 import 'package:fitmeter_mobile/views/pages/login.dart';
 import 'package:fitmeter_mobile/views/pages/register.dart';
@@ -41,10 +42,10 @@ class FitMeterMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'FitMeter',
       theme: ThemeData(primarySwatch: Colors.blue),
-      routerConfig: _router,
+      home: const BottomNavBar(),
     );
   }
 }

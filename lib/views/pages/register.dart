@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
 
-  static const tabs = ['/', '/login', '/register'];
-
   @override
   Widget build(BuildContext context) {
-    final String location = GoRouterState.of(context).uri.toString();
-
-    int selectedIndex = tabs.indexWhere((tab) => location.startsWith(tab));
-    if (selectedIndex == -1) selectedIndex = 0;
-
     return Scaffold(
       backgroundColor: Colors.indigo,
       body: Center(
@@ -21,7 +13,11 @@ class RegisterPage extends StatelessWidget {
           children: [
             const Text(
               "Register",
-              style: TextStyle(color: Colors.white, fontSize: 30),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+              ),
             ),
             SizedBox(height: 10),
             Padding(
@@ -51,20 +47,6 @@ class RegisterPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          context.go(tabs[index]); // navigate using go_router
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Login'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.app_registration_rounded),
-            label: 'Register',
-          ),
-        ],
       ),
     );
   }
