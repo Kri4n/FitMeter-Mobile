@@ -1,11 +1,22 @@
+import 'package:fitmeter_mobile/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
+  ConsumerState<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> {
+  @override
   Widget build(BuildContext context) {
+    final email = ref.watch(emailProvider);
+    final password = ref.watch(passwordProvider);
+    final token = ref.watch(tokenProvider);
+
     return Scaffold(
       backgroundColor: Colors.indigo,
       body: Center(
@@ -27,6 +38,9 @@ class LoginPage extends StatelessWidget {
               ), // left & right space
               child: Form(
                 child: TextFormField(
+                  initialValue: email,
+                  onChanged: (value) =>
+                      ref.read(emailProvider.notifier).state = value,
                   decoration: InputDecoration(
                     labelText: "Email",
                     labelStyle: TextStyle(color: Colors.white),
@@ -58,6 +72,9 @@ class LoginPage extends StatelessWidget {
               ), // left & right space
               child: Form(
                 child: TextFormField(
+                  initialValue: password,
+                  onChanged: (value) =>
+                      ref.read(passwordProvider.notifier).state = value,
                   decoration: InputDecoration(
                     labelText: "Password",
                     labelStyle: TextStyle(color: Colors.white),
@@ -75,7 +92,7 @@ class LoginPage extends StatelessWidget {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Password is required";
-                    }
+                    } else {}
                     return null;
                   },
                   cursorColor: Colors.white,
@@ -86,7 +103,14 @@ class LoginPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (kDebugMode) {
-                  print('Navigate to register page');
+                  print('Navigate to workouts page');
+                }
+                final emailValue = ref.read(emailProvider);
+                final passwordValue = ref.read(passwordProvider);
+
+                if (kDebugMode) {
+                  print("Email: $emailValue");
+                  print("Password: $passwordValue");
                 }
               },
               style: ElevatedButton.styleFrom(
