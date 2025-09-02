@@ -7,10 +7,10 @@ class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
 
   @override
-  State<BottomNavBar> createState() => _PersistentNavBarState();
+  State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
-class _PersistentNavBarState extends State<BottomNavBar> {
+class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
