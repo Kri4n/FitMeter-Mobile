@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+import 'package:fitmeter_mobile/data/api_routes.dart';
 import 'package:fitmeter_mobile/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -11,6 +15,25 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+  Future<void> login(String emailValue, String passwordValue) async {
+    final url = Uri.parse(ApiRoutes.login);
+    var res = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email": emailValue, "password": passwordValue}),
+    );
+
+    if (res.statusCode == 200) {
+      if (kDebugMode) {
+        print("Successfully Logged In");
+      }
+    } else {
+      if (kDebugMode) {
+        print("Invalid Credentials");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final email = ref.watch(emailProvider);
@@ -102,9 +125,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                if (kDebugMode) {
-                  print('Navigate to workouts page');
-                }
                 final emailValue = ref.read(emailProvider);
                 final passwordValue = ref.read(passwordProvider);
 
@@ -112,6 +132,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   print("Email: $emailValue");
                   print("Password: $passwordValue");
                 }
+
+                login(emailValue, passwordValue);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black54,
