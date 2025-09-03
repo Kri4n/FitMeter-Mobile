@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:fitmeter_mobile/data/api_routes.dart';
-import 'package:fitmeter_mobile/main.dart';
+import 'package:fitmeter_mobile/providers/auth_provider.dart';
+import 'package:fitmeter_mobile/utils/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,8 +25,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
 
     if (res.statusCode == 200) {
+      final dynamic data = jsonDecode(res.body);
+      final String token = data['access'];
+
       if (kDebugMode) {
         print("Successfully Logged In");
+        print('Token: $token');
+      }
+
+      await SecureStorage.saveToken(accessToken: token);
+      var storedToken = await SecureStorage.readToken();
+
+      if (kDebugMode) {
+        print('Stored token: $storedToken');
       }
     } else {
       if (kDebugMode) {
@@ -36,9 +48,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final email = ref.watch(emailProvider);
-    final password = ref.watch(passwordProvider);
-    final token = ref.watch(tokenProvider);
+    final email = ref.watch(AuthProvider.emailProvider);
+    final password = ref.watch(AuthProvider.passwordProvider);
 
     return Scaffold(
       backgroundColor: Colors.indigo,
@@ -63,7 +74,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: TextFormField(
                   initialValue: email,
                   onChanged: (value) =>
-                      ref.read(emailProvider.notifier).state = value,
+                      ref.read(AuthProvider.emailProvider.notifier).state =
+                          value,
                   decoration: InputDecoration(
                     labelText: "Email",
                     labelStyle: TextStyle(color: Colors.white),
@@ -97,7 +109,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 child: TextFormField(
                   initialValue: password,
                   onChanged: (value) =>
-                      ref.read(passwordProvider.notifier).state = value,
+                      ref.read(AuthProvider.passwordProvider.notifier).state =
+                          value,
                   decoration: InputDecoration(
                     labelText: "Password",
                     labelStyle: TextStyle(color: Colors.white),
@@ -125,8 +138,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                final emailValue = ref.read(emailProvider);
-                final passwordValue = ref.read(passwordProvider);
+                final emailValue = ref.read(AuthProvider.emailProvider);
+                final passwordValue = ref.read(AuthProvider.passwordProvider);
 
                 if (kDebugMode) {
                   print("Email: $emailValue");

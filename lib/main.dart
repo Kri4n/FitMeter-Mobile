@@ -7,10 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:go_router/go_router.dart';
 
-final emailProvider = StateProvider<String>((ref) => '');
-final passwordProvider = StateProvider<String>((ref) => '');
-final tokenProvider = StateProvider<String>((ref) => '');
-
 void main() async {
   await dotenv.load(fileName: ".env");
   runApp(const ProviderScope(child: FitMeterMobile()));
