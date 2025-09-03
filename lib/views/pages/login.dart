@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
+// Change StatefulWidget to ConsumerStatefulWidget for state management using riverpod
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
@@ -48,6 +49,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Users Credentials State
     final email = ref.watch(AuthProvider.emailProvider);
     final password = ref.watch(AuthProvider.passwordProvider);
 
@@ -72,7 +74,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ), // left & right space
               child: Form(
                 child: TextFormField(
+                  // Reads Email Value (Riverpod)
                   initialValue: email,
+                  // Sets Email Value (Riverpod)
                   onChanged: (value) =>
                       ref.read(AuthProvider.emailProvider.notifier).state =
                           value,

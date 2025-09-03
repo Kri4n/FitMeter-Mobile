@@ -1,7 +1,4 @@
 import 'package:fitmeter_mobile/views/components/bottomnavbar.dart';
-// import 'package:fitmeter_mobile/views/pages/home.dart';
-// import 'package:fitmeter_mobile/views/pages/login.dart';
-// import 'package:fitmeter_mobile/views/pages/register.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
+  // Wrap the App to ProviderScope for state management using riverpod
   runApp(const ProviderScope(child: FitMeterMobile()));
 }
 
