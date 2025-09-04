@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fitmeter_mobile/data/api_routes.dart';
 import 'package:fitmeter_mobile/providers/auth_provider.dart';
 import 'package:fitmeter_mobile/utils/flutter_secure_storage.dart';
+import 'package:fitmeter_mobile/views/pages/workouts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,11 +36,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
 
       await SecureStorage.saveToken(accessToken: token);
-      var storedToken = await SecureStorage.readToken();
 
-      if (kDebugMode) {
-        print('Stored token: $storedToken');
-      }
+      // Navigate to WorkoutsPage after login
+      if (!mounted) return; // check if widget is still in the tree
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WorkoutsPage()),
+      );
     } else {
       if (kDebugMode) {
         print("Invalid Credentials");
