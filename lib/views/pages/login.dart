@@ -18,6 +18,8 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+  bool _showPassword = true;
+
   Future<void> login(String emailValue, String passwordValue) async {
     final url = Uri.parse(ApiRoutes.login);
     var res = await http.post(
@@ -77,6 +79,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ), // left & right space
               child: Form(
                 child: TextFormField(
+                  style: TextStyle(color: Colors.white),
                   // Reads Email Value (Riverpod)
                   initialValue: email,
                   // Sets Email Value (Riverpod)
@@ -114,6 +117,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ), // left & right space
               child: Form(
                 child: TextFormField(
+                  style: TextStyle(color: Colors.white),
+                  obscureText: _showPassword,
                   initialValue: password,
                   onChanged: (value) =>
                       ref.read(AuthProvider.passwordProvider.notifier).state =
@@ -131,6 +136,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       borderSide: BorderSide(color: Colors.white, width: 2),
                     ),
                     prefixIcon: Icon(Icons.password, color: Colors.white),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _showPassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      color: Colors.white,
+                      onPressed: () {
+                        setState(() {
+                          _showPassword = !_showPassword;
+                        });
+                      },
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
