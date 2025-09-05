@@ -1,4 +1,6 @@
 import 'package:fitmeter_mobile/utils/flutter_secure_storage.dart';
+import 'package:fitmeter_mobile/views/components/bottomnavbar.dart';
+import 'package:fitmeter_mobile/views/components/showyesnodialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -37,9 +39,34 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
+            onPressed: () async {
               // Add your logout logic here
-              print("Logout pressed");
+              if (kDebugMode) {
+                print("Logout pressed");
+              }
+
+              final result = await showYesNoDialog(
+                context: context,
+                title: "Logout",
+                message: "Are you sure you want to logout?",
+                yesLabel: "Yes",
+                noLabel: "No",
+              );
+
+              if (result == true) {
+                await SecureStorage.deleteToken();
+
+                if (!mounted) return;
+                Navigator.pushReplacement(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  MaterialPageRoute(builder: (context) => const BottomNavBar()),
+                );
+              } else {
+                if (kDebugMode) {
+                  print('Cancel');
+                }
+              }
             },
           ),
         ],
@@ -61,9 +88,9 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               print("Add Workout");
             }
           },
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.white,
           shape: const CircleBorder(),
-          child: const Icon(Icons.add, size: 30, color: Colors.white),
+          child: const Icon(Icons.add, size: 30, color: Colors.blueAccent),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
