@@ -12,6 +12,10 @@ class WorkoutsPage extends StatefulWidget {
 }
 
 class _WorkoutsPageState extends State<WorkoutsPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _workout = TextEditingController();
+  final TextEditingController _duration = TextEditingController();
+
   Future<void> readToken() async {
     var storedToken = await SecureStorage.readToken();
     if (storedToken == null) {
@@ -24,6 +28,60 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     }
   }
 
+  Future<void> _addNewWorkoutForm() async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Add new workout"),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // prevents full-screen height
+              children: [
+                TextFormField(
+                  controller: _workout,
+                  decoration: const InputDecoration(labelText: "Name"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your workout";
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _duration,
+                  decoration: const InputDecoration(labelText: "Duration"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter duration";
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), // close dialog
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  // handle form submission
+                  Navigator.pop(context); // close dialog
+                }
+              },
+              child: const Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -34,7 +92,10 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FitMeter', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'FitMeter',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.blueAccent,
         actions: [
           IconButton(
@@ -76,7 +137,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Workouts Page', style: TextStyle(color: Colors.white)),
+            Text('No Workouts', style: TextStyle(color: Colors.white)),
           ],
         ),
       ),
@@ -87,6 +148,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
             if (kDebugMode) {
               print("Add Workout");
             }
+            _addNewWorkoutForm();
           },
           backgroundColor: Colors.white,
           shape: const CircleBorder(),
