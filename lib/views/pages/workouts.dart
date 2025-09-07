@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:fitmeter_mobile/data/api_routes.dart';
+import 'package:fitmeter_mobile/data/workouts.dart';
 import 'package:fitmeter_mobile/utils/flutter_secure_storage.dart';
 import 'package:fitmeter_mobile/views/components/bottomnavbar.dart';
 import 'package:fitmeter_mobile/views/components/showyesnodialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class WorkoutsPage extends StatefulWidget {
   const WorkoutsPage({super.key});
@@ -12,10 +17,6 @@ class WorkoutsPage extends StatefulWidget {
 }
 
 class _WorkoutsPageState extends State<WorkoutsPage> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _workout = TextEditingController();
-  final TextEditingController _duration = TextEditingController();
-
   Future<void> readToken() async {
     var storedToken = await SecureStorage.readToken();
     if (storedToken == null) {
@@ -35,12 +36,14 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         return AlertDialog(
           title: const Text("Add new workout"),
           content: Form(
-            key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min, // prevents full-screen height
               children: [
                 TextFormField(
-                  controller: _workout,
+                  initialValue: Workouts.name,
+                  onChanged: (value) => setState(() {
+                    Workouts.name = value;
+                  }),
                   decoration: const InputDecoration(labelText: "Name"),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -50,7 +53,10 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                   },
                 ),
                 TextFormField(
-                  controller: _duration,
+                  initialValue: Workouts.duration,
+                  onChanged: (value) => setState(() {
+                    Workouts.duration = value;
+                  }),
                   decoration: const InputDecoration(labelText: "Duration"),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -68,11 +74,9 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  // handle form submission
-                  Navigator.pop(context); // close dialog
-                }
+              onPressed: () async {
+                // handle form submission
+                submitAddWorkoutForm();
               },
               child: const Text("Submit"),
             ),
@@ -80,6 +84,39 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         );
       },
     );
+  }
+
+  Future<void> submitAddWorkoutForm() async {
+    var token = await SecureStorage.readToken();
+
+    final workoutName = Workouts.name;
+    final duration = Workouts.duration;
+
+    if (kDebugMode) {
+      print('Token: $token');
+      print(workoutName);
+      print(duration);
+    }
+    final url = Uri.parse(ApiRoutes.addWorkout);
+
+    final res = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'name': workoutName, 'duration': duration}),
+    );
+
+    if (res.statusCode == 201) {
+      if (kDebugMode) {
+        print('Workout Added Successfully!');
+        print(res.body);
+      }
+    }
+
+    if (!mounted) return;
+    Navigator.pop(context);
   }
 
   @override
