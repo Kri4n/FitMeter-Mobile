@@ -17,6 +17,10 @@ class WorkoutsPage extends StatefulWidget {
 }
 
 class _WorkoutsPageState extends State<WorkoutsPage> {
+  List<dynamic> _workouts = [];
+
+  bool isLoading = false;
+
   Future<void> readToken() async {
     var storedToken = await SecureStorage.readToken();
     if (storedToken == null) {
@@ -26,6 +30,38 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     }
     if (kDebugMode) {
       print("Stored Token: $storedToken");
+    }
+  }
+
+  Future<void> fetchWorkouts() async {
+    var token = await SecureStorage.readToken();
+    setState(() {
+      isLoading = true;
+    });
+    final url = Uri.parse(ApiRoutes.getWorkouts);
+
+    final res = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (res.statusCode == 200) {
+      if (kDebugMode) {
+        print(res.body);
+      }
+      final data = jsonDecode(res.body);
+      if (kDebugMode) {
+        print(data);
+      }
+      setState(() {
+        _workouts = data;
+      });
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -117,12 +153,15 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
 
     if (!mounted) return;
     Navigator.pop(context);
+
+    fetchWorkouts();
   }
 
   @override
   void initState() {
     super.initState();
     readToken();
+    fetchWorkouts();
   }
 
   @override
@@ -133,7 +172,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
           'FitMeter',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: const Color(0xFF111827),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
@@ -170,14 +209,53 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         ],
       ),
       backgroundColor: Colors.indigo,
-      body: const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('No Workouts', style: TextStyle(color: Colors.white)),
-          ],
-        ),
-      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator(color: Colors.white))
+          : _workouts.isEmpty
+          ? const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('No Workouts', style: TextStyle(color: Colors.white)),
+                ],
+              ),
+            )
+          : Center(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(top: 6),
+                itemCount: _workouts.length,
+                itemBuilder: (context, index) {
+                  final workout = _workouts[index];
+                  return Card(
+                    color: const Color(0xFF111827),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 5,
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        workout["name"],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Text(
+                        "Duration: ${workout["duration"]}\nStatus: ${workout["status"]}",
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      trailing: const Icon(
+                        Icons.more_vert,
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: FloatingActionButton(
