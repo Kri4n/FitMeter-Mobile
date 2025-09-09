@@ -247,9 +247,27 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                         "Duration: ${workout["duration"]}\nStatus: ${workout["status"]}",
                         style: const TextStyle(color: Colors.white70),
                       ),
-                      trailing: const Icon(
-                        Icons.more_vert,
-                        color: Colors.white,
+                      trailing: PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert, color: Colors.white),
+                        onSelected: (value) {
+                          if (value == 'update') {
+                            // Handle update action
+                            print("Update ${workout["name"]}");
+                          } else if (value == 'delete') {
+                            // Handle delete action
+                            print("Delete ${workout["name"]}");
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => [
+                          const PopupMenuItem(
+                            value: 'update',
+                            child: Text('Update'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
+                        ],
                       ),
                     ),
                   );
