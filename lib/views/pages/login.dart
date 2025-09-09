@@ -18,9 +18,35 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+  bool _isUsernameEmpty = false;
+  bool _isPasswordEmpty = false;
+  bool _isUsernameInvalid = false;
+  bool _isPasswordInvalid = false;
   bool _showPassword = true;
 
+  Future<void> emptyCredentialsChecker(
+    String emailValue,
+    String passwordValue,
+  ) async {
+    if (emailValue == "") {
+      setState(() {
+        _isUsernameEmpty = true;
+      });
+    } else {
+      _isUsernameEmpty = false;
+    }
+    if (passwordValue == "") {
+      setState(() {
+        _isPasswordEmpty = true;
+      });
+    } else {
+      _isPasswordEmpty = false;
+    }
+  }
+
   Future<void> login(String emailValue, String passwordValue) async {
+    emptyCredentialsChecker(emailValue, passwordValue);
+
     final url = Uri.parse(ApiRoutes.login);
     var res = await http.post(
       url,
@@ -46,8 +72,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         MaterialPageRoute(builder: (context) => const WorkoutsPage()),
       );
     } else {
-      if (kDebugMode) {
-        print("Invalid Credentials");
+      if (res.statusCode == 401) {
+        final message = jsonDecode(res.body);
+
+        if (message['message'] == 'Invalid password') {
+          setState(() {
+            _isUsernameInvalid = false;
+            _isPasswordInvalid = true;
+          });
+        } else if (message['message'] == 'Email not found') {
+          setState(() {
+            _isUsernameInvalid = true;
+            _isPasswordInvalid = false;
+          });
+        } else {
+          if (kDebugMode) {
+            print("Error Logging in");
+          }
+        }
       }
     }
   }
@@ -88,6 +130,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           value,
                   decoration: InputDecoration(
                     labelText: "Email",
+                    errorText: _isUsernameEmpty
+                        ? "Please Enter Email"
+                        : _isUsernameInvalid
+                        ? "Emai not found"
+                        : null,
                     labelStyle: TextStyle(color: Colors.white),
                     hintText: "Enter your email",
                     hintStyle: TextStyle(color: Colors.white),
@@ -100,12 +147,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     prefixIcon: Icon(Icons.email, color: Colors.white),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Email is required";
-                    }
-                    return null;
-                  },
                   cursorColor: Colors.white,
                 ),
               ),
@@ -125,6 +166,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           value,
                   decoration: InputDecoration(
                     labelText: "Password",
+                    errorText: _isPasswordEmpty
+                        ? "Please Enter Password"
+                        : _isPasswordInvalid
+                        ? "Invalid password"
+                        : null,
                     labelStyle: TextStyle(color: Colors.white),
                     hintText: "Enter your password",
                     hintStyle: TextStyle(color: Colors.white),
@@ -148,12 +194,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       },
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Password is required";
-                    } else {}
-                    return null;
-                  },
+
                   cursorColor: Colors.white,
                 ),
               ),
