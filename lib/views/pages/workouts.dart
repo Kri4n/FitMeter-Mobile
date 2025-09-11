@@ -90,6 +90,35 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     fetchWorkouts();
   }
 
+  Future<void> updateWorkout(String workoutId) async {
+    var token = await SecureStorage.readToken();
+    final workoutName = Workouts.name;
+    final duration = Workouts.duration;
+
+    final url = ApiRoutes.updateWorkout(workoutId);
+    final res = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'name': workoutName, 'duration': duration}),
+    );
+
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      if (kDebugMode) {
+        print(data['message']);
+      }
+    } else {
+      if (kDebugMode) {
+        print("Failed to update workout");
+      }
+    }
+
+    fetchWorkouts();
+  }
+
   Future<void> _addNewWorkoutForm() async {
     showDialog(
       context: context,
@@ -138,6 +167,53 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
               onPressed: () async {
                 // handle form submission
                 submitAddWorkoutForm();
+              },
+              child: const Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> updateWorkoutForm(String workoutId) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Update Workout"),
+          content: Form(
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // prevents full-screen height
+              children: [
+                TextFormField(
+                  initialValue: Workouts.name,
+                  onChanged: (value) => setState(() {
+                    Workouts.name = value;
+                  }),
+                  decoration: const InputDecoration(labelText: "Name"),
+                ),
+                TextFormField(
+                  initialValue: Workouts.duration,
+                  onChanged: (value) => setState(() {
+                    Workouts.duration = value;
+                  }),
+                  decoration: const InputDecoration(labelText: "Duration"),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), // close dialog
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (!mounted) return;
+                Navigator.pop(context);
+                // handle form submission
+                updateWorkout(workoutId);
               },
               child: const Text("Submit"),
             ),
@@ -277,15 +353,9 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                         onSelected: (value) async {
                           switch (value) {
                             case 'update':
-                              if (kDebugMode) {
-                                print("Update ${workout["_id"]}");
-                                print("Update ${workout["name"]}");
-                              }
+                              final workoutId = workout["_id"];
+                              updateWorkoutForm(workoutId);
                             case 'delete':
-                              if (kDebugMode) {
-                                print("Delete ${workout["_id"]}");
-                                print("Delete ${workout["name"]}");
-                              }
                               final workoutId = workout["_id"];
                               deleteWorkout(workoutId);
                           }
