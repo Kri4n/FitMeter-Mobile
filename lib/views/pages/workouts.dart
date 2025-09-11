@@ -65,6 +65,31 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
     }
   }
 
+  Future<void> deleteWorkout(String workoutId) async {
+    var token = await SecureStorage.readToken();
+    final url = ApiRoutes.deleteWorkout(workoutId);
+    final res = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (res.statusCode == 200) {
+      final message = jsonDecode(res.body);
+      if (kDebugMode) {
+        print(message);
+      }
+    } else {
+      if (kDebugMode) {
+        print("Failed to delete workout");
+      }
+    }
+
+    fetchWorkouts();
+  }
+
   Future<void> _addNewWorkoutForm() async {
     showDialog(
       context: context,
@@ -249,13 +274,20 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       ),
                       trailing: PopupMenuButton<String>(
                         icon: const Icon(Icons.more_vert, color: Colors.white),
-                        onSelected: (value) {
-                          if (value == 'update') {
-                            // Handle update action
-                            print("Update ${workout["name"]}");
-                          } else if (value == 'delete') {
-                            // Handle delete action
-                            print("Delete ${workout["name"]}");
+                        onSelected: (value) async {
+                          switch (value) {
+                            case 'update':
+                              if (kDebugMode) {
+                                print("Update ${workout["_id"]}");
+                                print("Update ${workout["name"]}");
+                              }
+                            case 'delete':
+                              if (kDebugMode) {
+                                print("Delete ${workout["_id"]}");
+                                print("Delete ${workout["name"]}");
+                              }
+                              final workoutId = workout["_id"];
+                              deleteWorkout(workoutId);
                           }
                         },
                         itemBuilder: (BuildContext context) => [

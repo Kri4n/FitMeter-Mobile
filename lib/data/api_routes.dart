@@ -10,6 +10,9 @@ class ApiRoutes {
   static String getWorkouts = "$url/workouts/getMyWorkouts";
   static String addWorkout = "$url/workouts/addWorkout";
   static String updateWorkout = "$url/workouts/updateWorkout";
-  static String deleteWorkout = "$url/workouts/deleteWorkout";
+  static Uri deleteWorkout(String workoutId) {
+    return Uri.parse("$url/workouts/deleteWorkout/$workoutId");
+  }
+
   static String completeWorkout = "$url/workouts/completeWorkoutStatus";
 }
