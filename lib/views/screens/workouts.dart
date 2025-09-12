@@ -1,14 +1,21 @@
+import 'package:duration_picker/duration_picker.dart';
 import 'package:fitmeter/model/workouts_model.dart';
 import 'package:fitmeter/utils/flutter_secure_storage.dart';
 import 'package:fitmeter/views/components/showyesnodialog.dart';
 import 'package:fitmeter/providers/workouts_provider.dart';
 import 'package:fitmeter/views/screens/login.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class WorkoutsPage extends ConsumerWidget {
+class WorkoutsPage extends ConsumerStatefulWidget {
   const WorkoutsPage({super.key});
 
+  @override
+  ConsumerState<WorkoutsPage> createState() => _WorkoutsPageState();
+}
+
+class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
   void _showWorkoutForm(
     BuildContext context,
     WidgetRef ref, {
@@ -16,7 +23,7 @@ class WorkoutsPage extends ConsumerWidget {
   }) {
     final nameController = TextEditingController(text: workout?.name ?? "");
     final durationController = TextEditingController(
-      text: workout?.duration ?? "",
+      text: workout?.duration ?? "00:00:00",
     );
 
     showGeneralDialog(
@@ -31,14 +38,11 @@ class WorkoutsPage extends ConsumerWidget {
           child: Material(
             color: Colors.transparent,
             child: Container(
-              margin: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
+              margin: const EdgeInsets.only(bottom: 300, left: 16, right: 16),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(blurRadius: 20, offset: const Offset(0, 10)),
-                ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -55,13 +59,37 @@ class WorkoutsPage extends ConsumerWidget {
                   TextField(
                     controller: nameController,
                     decoration: const InputDecoration(
-                      labelText: "Name",
+                      labelText: "Title",
                       border: OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: durationController,
+                    readOnly: true,
+                    onTap: () async {
+                      Duration? pickedDuration = await showDurationPicker(
+                        context: context,
+                        initialTime: Duration(minutes: 0),
+                      );
+                      if (pickedDuration != null) {
+                        if (kDebugMode) {
+                          print('Duration: $pickedDuration');
+                        }
+                        final hours = pickedDuration.inHours.toString().padLeft(
+                          2,
+                          '0',
+                        );
+                        final minutes = (pickedDuration.inMinutes % 60)
+                            .toString()
+                            .padLeft(2, '0');
+                        final seconds = (pickedDuration.inSeconds % 60)
+                            .toString()
+                            .padLeft(2, '0');
+
+                        durationController.text = "$hours:$minutes:$seconds";
+                      }
+                    },
                     decoration: const InputDecoration(
                       labelText: "Duration",
                       border: OutlineInputBorder(),
@@ -150,12 +178,18 @@ class WorkoutsPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final workoutsState = ref.watch(workoutsNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("FitMeter", style: TextStyle(color: Colors.white)),
+        title: Row(
+          children: [
+            Image.asset('assets/fitmeter-logo.png', height: 30),
+            const SizedBox(width: 8),
+            const Text("FitMeter", style: TextStyle(color: Colors.white)),
+          ],
+        ),
         backgroundColor: const Color(0xFF111827),
         actions: [
           IconButton(

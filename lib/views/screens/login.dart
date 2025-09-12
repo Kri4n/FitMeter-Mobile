@@ -114,14 +114,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Login",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset("assets/fitmeter-logo.png", height: 100),
+                const SizedBox(width: 10),
+                const Text(
+                  "FitMeter",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
+                ),
+              ],
             ),
+
             SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(

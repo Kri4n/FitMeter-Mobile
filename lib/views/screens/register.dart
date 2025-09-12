@@ -4,16 +4,17 @@ import 'package:fitmeter/data/api_routes.dart';
 import 'package:fitmeter/views/screens/login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   bool _isUsernameEmpty = false;
   bool _isPasswordEmpty = false;
   bool _isUsernameInvalid = false;
@@ -121,14 +122,8 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Register",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-              ),
-            ),
+            const Icon(Icons.person_add, color: Colors.white, size: 100),
+
             SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(
