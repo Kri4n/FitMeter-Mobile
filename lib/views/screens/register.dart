@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fitmeter/data/api_routes.dart';
+import 'package:fitmeter/views/screens/login.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,31 +14,97 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // Credentials to be registered
-  String _email = "";
-  String _password = "";
+  bool _isUsernameEmpty = false;
+  bool _isPasswordEmpty = false;
+  bool _isUsernameInvalid = false;
+  bool _isPasswordInvalid = false;
+  bool _showPassword = true;
 
-  Future<void> register() async {
+  // Credentials to be registered
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+
+  @override
+  void dispose() {
+    _email.dispose();
+    super.dispose();
+  }
+
+  Future<void> emptyCredentialsChecker(
+    String emailValue,
+    String passwordValue,
+  ) async {
+    if (emailValue == "") {
+      setState(() {
+        _isUsernameEmpty = true;
+      });
+    } else {
+      _isUsernameEmpty = false;
+    }
+    if (passwordValue == "") {
+      setState(() {
+        _isPasswordEmpty = true;
+      });
+    } else {
+      _isPasswordEmpty = false;
+    }
+  }
+
+  Future<void> register(String emailValue, String passwordValue) async {
+    emptyCredentialsChecker(emailValue, passwordValue);
+
     final url = Uri.parse(ApiRoutes.register);
     try {
       final res = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': _email, 'password': _password}),
+        body: jsonEncode({'email': emailValue, 'password': passwordValue}),
       );
 
       if (res.statusCode == 201) {
         if (kDebugMode) {
           print(res.body);
         }
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Successfully Registered'),
+            backgroundColor: Colors.green, // optional
+          ),
+        );
+
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+        );
       } else if (res.statusCode == 400) {
+        final error = jsonDecode(res.body);
         if (kDebugMode) {
-          print(res.body);
+          print(error);
+        }
+
+        switch (error['message']) {
+          case "Invalid email format. Please include @":
+            setState(() {
+              _isUsernameInvalid = true;
+              _isPasswordInvalid = false;
+            });
+
+          case "Password must be at least 8 characters long":
+            setState(() {
+              _isUsernameInvalid = false;
+              _isPasswordInvalid = true;
+            });
         }
       } else {
-        if (kDebugMode) {
-          print("Register Failed");
-        }
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Register Failed, Something Went Wrong'),
+            backgroundColor: Colors.red, // optional
+          ),
+        );
       }
     } catch (e) {
       if (kDebugMode) {
@@ -69,12 +136,15 @@ class _RegisterPageState extends State<RegisterPage> {
               ), // left & right space
               child: Form(
                 child: TextFormField(
-                  initialValue: _email,
-                  onChanged: (value) => setState(() {
-                    _email = value;
-                  }),
+                  controller: _email,
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: "Email",
+                    errorText: _isUsernameEmpty
+                        ? "Please Enter Email"
+                        : _isUsernameInvalid
+                        ? "Invalid email format. Please include @"
+                        : null,
                     labelStyle: TextStyle(color: Colors.white),
                     hintText: "Enter your email",
                     hintStyle: TextStyle(color: Colors.white),
@@ -87,12 +157,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     prefixIcon: Icon(Icons.email, color: Colors.white),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Email is required";
-                    }
-                    return null;
-                  },
                   cursorColor: Colors.white,
                 ),
               ),
@@ -104,12 +168,16 @@ class _RegisterPageState extends State<RegisterPage> {
               ), // left & right space
               child: Form(
                 child: TextFormField(
-                  initialValue: _password,
-                  onChanged: (value) => setState(() {
-                    _password = value;
-                  }),
+                  controller: _password,
+                  obscureText: _showPassword,
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     labelText: "Password",
+                    errorText: _isPasswordEmpty
+                        ? "Please Enter Password"
+                        : _isPasswordInvalid
+                        ? "Password must be 8 characters long"
+                        : null,
                     labelStyle: TextStyle(color: Colors.white),
                     hintText: "Enter your password",
                     hintStyle: TextStyle(color: Colors.white),
@@ -121,13 +189,18 @@ class _RegisterPageState extends State<RegisterPage> {
                       borderSide: BorderSide(color: Colors.white, width: 2),
                     ),
                     prefixIcon: Icon(Icons.password, color: Colors.white),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _showPassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      color: Colors.white,
+                      onPressed: () {
+                        setState(() {
+                          _showPassword = !_showPassword;
+                        });
+                      },
+                    ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Password is required";
-                    }
-                    return null;
-                  },
                   cursorColor: Colors.white,
                 ),
               ),
@@ -135,26 +208,43 @@ class _RegisterPageState extends State<RegisterPage> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
+                final String emailValue = _email.text;
+                final String passwordValue = _password.text;
+
                 if (kDebugMode) {
-                  print('Navigate to register page');
-                }
-                if (kDebugMode) {
-                  print(_email);
-                  print(_password);
+                  print(emailValue);
+                  print(passwordValue);
                 }
 
-                register();
+                register(emailValue, passwordValue);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black54,
+                backgroundColor: Color(0xFF111827),
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10), // round corners
                 ),
               ),
               child: const Text(
-                "Submit",
+                "Create Account",
                 style: TextStyle(color: Colors.white),
+              ),
+            ),
+            SizedBox(height: 10),
+            InkWell(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+              child: const Text(
+                "Sign In",
+                style: TextStyle(
+                  color: Color(0xFF111827),
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
           ],

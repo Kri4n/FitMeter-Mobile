@@ -1,8 +1,7 @@
-import 'package:fitmeter/views/components/bottomnavbar.dart';
+import 'package:fitmeter/views/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:go_router/go_router.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -18,7 +17,7 @@ class FitMeterMobile extends StatelessWidget {
     return MaterialApp(
       title: 'FitMeter',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const BottomNavBar(),
+      home: const HomePage(),
     );
   }
 }

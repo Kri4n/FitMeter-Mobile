@@ -1,8 +1,8 @@
 import 'package:fitmeter/model/workouts_model.dart';
 import 'package:fitmeter/utils/flutter_secure_storage.dart';
-import 'package:fitmeter/views/components/bottomnavbar.dart';
 import 'package:fitmeter/views/components/showyesnodialog.dart';
 import 'package:fitmeter/providers/workouts_provider.dart';
+import 'package:fitmeter/views/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -173,7 +173,7 @@ class WorkoutsPage extends ConsumerWidget {
                 if (context.mounted) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (_) => const BottomNavBar()),
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
                   );
                 }
               }

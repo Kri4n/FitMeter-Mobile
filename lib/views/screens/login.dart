@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fitmeter/data/api_routes.dart';
 import 'package:fitmeter/providers/auth_provider.dart';
 import 'package:fitmeter/utils/flutter_secure_storage.dart';
+import 'package:fitmeter/views/screens/register.dart';
 import 'package:fitmeter/views/screens/workouts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  Future<void> clearLoginForm(String emailValue, String passwordValue) async {
+    ref.read(AuthProvider.emailProvider.notifier).state = "";
+    ref.read(AuthProvider.passwordProvider.notifier).state = "";
+  }
+
   Future<void> login(String emailValue, String passwordValue) async {
     emptyCredentialsChecker(emailValue, passwordValue);
 
@@ -64,6 +70,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
 
       await SecureStorage.saveToken(accessToken: token);
+
+      clearLoginForm(emailValue, passwordValue);
 
       // Navigate to WorkoutsPage after login
       if (!mounted) return; // check if widget is still in the tree
@@ -213,7 +221,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 login(emailValue, passwordValue);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black54,
+                backgroundColor: Color(0xFF111827),
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10), // round corners
@@ -222,6 +230,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: const Text(
                 "Sign In",
                 style: TextStyle(color: Colors.white),
+              ),
+            ),
+            SizedBox(height: 10),
+            InkWell(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterPage()),
+                );
+              },
+              child: const Text(
+                "Create new account",
+                style: TextStyle(
+                  color: Color(0xFF111827),
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
           ],

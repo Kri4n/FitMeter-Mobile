@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
+import 'package:fitmeter/views/screens/login.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -12,7 +13,12 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/fitmeter-logo.png', width: 150, height: 150),
+            Lottie.asset(
+              'assets/fitness.json',
+              width: 200,
+              height: 200,
+              fit: BoxFit.fill,
+            ),
             const Text(
               "Welcome to FitMeter",
               style: TextStyle(
@@ -35,9 +41,10 @@ class HomePage extends StatelessWidget {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                if (kDebugMode) {
-                  print('Navigate to register page');
-                }
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.lightBlue,
