@@ -1,6 +1,6 @@
-import 'package:fitmeter_mobile/views/pages/home.dart';
-import 'package:fitmeter_mobile/views/pages/login.dart';
-import 'package:fitmeter_mobile/views/pages/register.dart';
+import 'package:fitmeter_mobile/views/screens/home.dart';
+import 'package:fitmeter_mobile/views/screens/login.dart';
+import 'package:fitmeter_mobile/views/screens/register.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {

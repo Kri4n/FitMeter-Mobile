@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:fitmeter_mobile/data/api_routes.dart';
 import 'package:fitmeter_mobile/providers/auth_provider.dart';
 import 'package:fitmeter_mobile/utils/flutter_secure_storage.dart';
-import 'package:fitmeter_mobile/views/pages/workouts.dart';
+import 'package:fitmeter_mobile/views/screens/workouts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
