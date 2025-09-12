@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:fitmeter_mobile/data/api_routes.dart';
+import 'package:fitmeter/data/api_routes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

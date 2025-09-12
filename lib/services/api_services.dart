@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:fitmeter_mobile/data/api_routes.dart';
-import 'package:fitmeter_mobile/model/workouts_model.dart';
-import 'package:fitmeter_mobile/utils/flutter_secure_storage.dart';
+import 'package:fitmeter/data/api_routes.dart';
+import 'package:fitmeter/model/workouts_model.dart';
+import 'package:fitmeter/utils/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {

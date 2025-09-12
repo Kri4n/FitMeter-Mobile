@@ -1,8 +1,8 @@
-import 'package:fitmeter_mobile/model/workouts_model.dart';
-import 'package:fitmeter_mobile/utils/flutter_secure_storage.dart';
-import 'package:fitmeter_mobile/views/components/bottomnavbar.dart';
-import 'package:fitmeter_mobile/views/components/showyesnodialog.dart';
-import 'package:fitmeter_mobile/providers/workouts_provider.dart';
+import 'package:fitmeter/model/workouts_model.dart';
+import 'package:fitmeter/utils/flutter_secure_storage.dart';
+import 'package:fitmeter/views/components/bottomnavbar.dart';
+import 'package:fitmeter/views/components/showyesnodialog.dart';
+import 'package:fitmeter/providers/workouts_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -73,12 +73,15 @@ class WorkoutsPage extends ConsumerWidget {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text("Cancel"),
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
+                          backgroundColor: const Color(0xFF111827),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -102,7 +105,10 @@ class WorkoutsPage extends ConsumerWidget {
                           }
                           if (context.mounted) Navigator.pop(context);
                         },
-                        child: const Text("Submit"),
+                        child: const Text(
+                          "Submit",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),

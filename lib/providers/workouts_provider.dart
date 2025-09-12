@@ -1,6 +1,6 @@
-import 'package:fitmeter_mobile/services/api_services.dart';
+import 'package:fitmeter/services/api_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fitmeter_mobile/model/workouts_model.dart';
+import 'package:fitmeter/model/workouts_model.dart';
 
 /// Fetch workouts from API
 final workoutsProvider = FutureProvider<List<WorkoutsModel>>((ref) async {
