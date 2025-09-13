@@ -69,6 +69,8 @@ flutter:
     - .env
     - assets/fitmeter-logo.png
     - assets/fitness.json
+    - assets/audio/countdown.mp3
+    # - assets/audio/clockticking.mp3
 
 flutter_native_splash:
   color: "#111827" # Background color (white, you can change hex)

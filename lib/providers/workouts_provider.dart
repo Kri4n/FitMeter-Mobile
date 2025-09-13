@@ -48,6 +48,15 @@ class WorkoutsNotifier extends StateNotifier<AsyncValue<List<WorkoutsModel>>> {
       state = AsyncValue.error(e, st);
     }
   }
+
+  Future<void> completeWorkout(String id) async {
+    try {
+      await ApiService.completeWorkout(id);
+      _loadWorkouts();
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
 }
 
 final workoutsNotifierProvider =

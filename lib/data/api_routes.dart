@@ -17,5 +17,7 @@ class ApiRoutes {
     return Uri.parse("$url/workouts/updateWorkout/$workoutId");
   }
 
-  static String completeWorkout = "$url/workouts/completeWorkoutStatus";
+  static Uri completeWorkout(String workoutId) {
+    return Uri.parse("$url/workouts/completeWorkoutStatus/$workoutId");
+  }
 }

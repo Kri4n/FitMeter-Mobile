@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fitmeter/data/api_routes.dart';
 import 'package:fitmeter/model/workouts_model.dart';
 import 'package:fitmeter/utils/flutter_secure_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -71,6 +72,26 @@ class ApiService {
 
     if (response.statusCode != 200) {
       throw Exception("Failed to delete workout");
+    }
+  }
+
+  static Future<void> completeWorkout(String id) async {
+    final token = await SecureStorage.readToken();
+    final response = await http.patch(
+      ApiRoutes.completeWorkout(id),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200 || response.statusCode > 201) {
+      throw Exception("Failed to complete workout");
+    } else {
+      final resBody = jsonDecode(response.body);
+      if (kDebugMode) {
+        print(resBody['message']);
+      }
     }
   }
 }
