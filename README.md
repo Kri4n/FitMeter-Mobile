@@ -1,4 +1,4 @@
-# fitmeter_mobile
+# fitmeter
 
 A new Flutter project.
 

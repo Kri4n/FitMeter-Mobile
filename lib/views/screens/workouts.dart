@@ -1,9 +1,10 @@
-import 'package:duration_picker/duration_picker.dart';
 import 'package:fitmeter/model/workouts_model.dart';
 import 'package:fitmeter/utils/flutter_secure_storage.dart';
 import 'package:fitmeter/views/components/showyesnodialog.dart';
 import 'package:fitmeter/providers/workouts_provider.dart';
+import 'package:fitmeter/views/components/workoutform.dart';
 import 'package:fitmeter/views/screens/login.dart';
+import 'package:fitmeter/views/screens/startworkout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,165 +17,36 @@ class WorkoutsPage extends ConsumerStatefulWidget {
 }
 
 class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
-  void _showWorkoutForm(
+  Future<void> _showWorkoutForm(
     BuildContext context,
     WidgetRef ref, {
     WorkoutsModel? workout,
-  }) {
-    final nameController = TextEditingController(text: workout?.name ?? "");
-    final durationController = TextEditingController(
-      text: workout?.duration ?? "00:00:00",
-    );
-
-    showGeneralDialog(
+  }) async {
+    showDialog(
       context: context,
-      barrierDismissible: true,
-      barrierLabel: "Workout Form",
-      // dim background
-      transitionDuration: const Duration(milliseconds: 350),
-      pageBuilder: (context, anim1, anim2) {
-        return Align(
-          alignment: Alignment.bottomCenter,
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 300, left: 16, right: 16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    workout == null ? "Add Workout" : "Update Workout",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      labelText: "Title",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: durationController,
-                    readOnly: true,
-                    onTap: () async {
-                      Duration? pickedDuration = await showDurationPicker(
-                        context: context,
-                        initialTime: Duration(minutes: 0),
-                      );
-                      if (pickedDuration != null) {
-                        if (kDebugMode) {
-                          print('Duration: $pickedDuration');
-                        }
-                        final hours = pickedDuration.inHours.toString().padLeft(
-                          2,
-                          '0',
-                        );
-                        final minutes = (pickedDuration.inMinutes % 60)
-                            .toString()
-                            .padLeft(2, '0');
-                        final seconds = (pickedDuration.inSeconds % 60)
-                            .toString()
-                            .padLeft(2, '0');
-
-                        durationController.text = "$hours:$minutes:$seconds";
-                      }
-                    },
-                    decoration: const InputDecoration(
-                      labelText: "Duration",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF111827),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () async {
-                          if (workout == null) {
-                            await ref
-                                .read(workoutsNotifierProvider.notifier)
-                                .addWorkout(
-                                  nameController.text,
-                                  durationController.text,
-                                );
-                          } else {
-                            await ref
-                                .read(workoutsNotifierProvider.notifier)
-                                .updateWorkout(
-                                  workout.id,
-                                  nameController.text,
-                                  durationController.text,
-                                );
-                          }
-                          if (context.mounted) Navigator.pop(context);
-                        },
-                        child: const Text(
-                          "Submit",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-      transitionBuilder: (context, anim1, anim2, child) {
-        final curvedValue =
-            Curves.easeOutCubic.transform(anim1.value) - 1.0; // smooth ease
-        return Transform.translate(
-          offset: Offset(0, curvedValue * -200), // slide from bottom
-          child: Opacity(opacity: anim1.value, child: child),
-        );
-      },
+      builder: (context) => WorkoutForm(
+        workout: workout,
+        onSubmit: (name, duration) async {
+          if (workout == null) {
+            await ref
+                .read(workoutsNotifierProvider.notifier)
+                .addWorkout(name, duration);
+          } else {
+            await ref
+                .read(workoutsNotifierProvider.notifier)
+                .updateWorkout(workout.id, name, duration);
+          }
+        },
+      ),
     );
   }
 
-  Future<void> _confirmDelete(
+  Future<void> _deleteWorkout(
     BuildContext context,
-    WidgetRef ref,
+    ref,
     String workoutId,
   ) async {
-    final confirm = await showYesNoDialog(
-      context: context,
-      title: "Delete Workout",
-      message: "Are you sure you want to delete this workout?",
-      yesLabel: "Yes",
-      noLabel: "No",
-    );
-
-    if (confirm == true) {
-      await ref
-          .read(workoutsNotifierProvider.notifier)
-          .deleteWorkout(workoutId);
-    }
+    await ref.read(workoutsNotifierProvider.notifier).deleteWorkout(workoutId);
   }
 
   @override
@@ -242,18 +114,56 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
                     "Duration: ${workout.duration}\nStatus: ${workout.status}",
                     style: const TextStyle(color: Colors.white70),
                   ),
-                  trailing: PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert, color: Colors.white),
-                    onSelected: (value) {
-                      if (value == 'update') {
-                        _showWorkoutForm(context, ref, workout: workout);
-                      } else if (value == 'delete') {
-                        _confirmDelete(context, ref, workout.id);
-                      }
-                    },
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(value: 'update', child: Text("Update")),
-                      PopupMenuItem(value: 'delete', child: Text("Delete")),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  StartWorkoutPage(workout: workout),
+                            ),
+                          );
+                          if (kDebugMode) {
+                            print("Start workout: ${workout.id}");
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        label: const Text(
+                          "Start",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        icon: const Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert, color: Colors.white),
+                        onSelected: (value) {
+                          if (value == 'update') {
+                            _showWorkoutForm(context, ref, workout: workout);
+                          } else if (value == 'delete') {
+                            _deleteWorkout(context, ref, workout.id);
+                          }
+                        },
+                        itemBuilder: (_) => const [
+                          PopupMenuItem(value: 'update', child: Text("Update")),
+                          PopupMenuItem(value: 'delete', child: Text("Delete")),
+                        ],
+                      ),
                     ],
                   ),
                 ),

@@ -1,4 +1,4 @@
-package com.example.fitmeter_mobile
+package com.example.fitmeter
 
 import io.flutter.embedding.android.FlutterActivity
 
