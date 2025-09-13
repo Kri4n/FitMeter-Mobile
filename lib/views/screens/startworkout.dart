@@ -75,16 +75,16 @@ class _StartWorkoutPageState extends ConsumerState<StartWorkoutPage> {
                       Text(
                         workout.name,
                         style: const TextStyle(
-                          fontSize: 22,
+                          fontSize: 30,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Duration: ${workout.duration}",
+                        workout.duration,
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 60,
                           color: Colors.white70,
                         ),
                       ),

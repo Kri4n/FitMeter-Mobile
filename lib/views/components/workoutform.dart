@@ -1,4 +1,4 @@
-import 'package:duration_picker/duration_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fitmeter/model/workouts_model.dart';
 
@@ -34,20 +34,97 @@ class _WorkoutFormState extends State<WorkoutForm> {
   }
 
   Future<void> _pickDuration() async {
-    final pickedDuration = await showDurationPicker(
+    Duration initial = Duration.zero;
+
+    final picked = await showModalBottomSheet<Duration>(
       context: context,
-      initialTime: const Duration(minutes: 0),
+      builder: (context) {
+        int hours = initial.inHours;
+        int minutes = initial.inMinutes % 60;
+        int seconds = initial.inSeconds % 60;
+
+        return Container(
+          height: 250,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const Text(
+                "Select Duration",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    // Hours
+                    Expanded(
+                      child: CupertinoPicker(
+                        itemExtent: 40,
+                        scrollController: FixedExtentScrollController(
+                          initialItem: hours,
+                        ),
+                        onSelectedItemChanged: (value) {
+                          hours = value;
+                        },
+                        children: List.generate(
+                          24,
+                          (i) => Center(child: Text("$i h")),
+                        ),
+                      ),
+                    ),
+                    // Minutes
+                    Expanded(
+                      child: CupertinoPicker(
+                        itemExtent: 40,
+                        scrollController: FixedExtentScrollController(
+                          initialItem: minutes,
+                        ),
+                        onSelectedItemChanged: (value) {
+                          minutes = value;
+                        },
+                        children: List.generate(
+                          60,
+                          (i) => Center(child: Text("$i m")),
+                        ),
+                      ),
+                    ),
+                    // Seconds
+                    Expanded(
+                      child: CupertinoPicker(
+                        itemExtent: 40,
+                        scrollController: FixedExtentScrollController(
+                          initialItem: seconds,
+                        ),
+                        onSelectedItemChanged: (value) {
+                          seconds = value;
+                        },
+                        children: List.generate(
+                          60,
+                          (i) => Center(child: Text("$i s")),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(
+                    context,
+                    Duration(hours: hours, minutes: minutes, seconds: seconds),
+                  );
+                },
+                child: const Text("Done"),
+              ),
+            ],
+          ),
+        );
+      },
     );
-    if (pickedDuration != null) {
-      final hours = pickedDuration.inHours.toString().padLeft(2, '0');
-      final minutes = (pickedDuration.inMinutes % 60).toString().padLeft(
-        2,
-        '0',
-      );
-      final seconds = (pickedDuration.inSeconds % 60).toString().padLeft(
-        2,
-        '0',
-      );
+
+    if (picked != null) {
+      final hours = picked.inHours.toString().padLeft(2, '0');
+      final minutes = (picked.inMinutes % 60).toString().padLeft(2, '0');
+      final seconds = (picked.inSeconds % 60).toString().padLeft(2, '0');
       _durationController.text = "$hours:$minutes:$seconds";
     }
   }
