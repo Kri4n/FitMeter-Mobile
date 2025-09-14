@@ -76,6 +76,8 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
               );
               if (result == true) {
                 await SecureStorage.deleteToken();
+                //  Clear workout state
+                ref.invalidate(workoutsNotifierProvider);
                 if (context.mounted) {
                   Navigator.pushReplacement(
                     context,
@@ -110,9 +112,30 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
                     workout.name,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  subtitle: Text(
-                    "Duration: ${workout.duration}\nStatus: ${workout.status}",
-                    style: const TextStyle(color: Colors.white70),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        workout.duration,
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      Row(
+                        children: [
+                          workout.status.toLowerCase() == "pending"
+                              ? const Icon(
+                                  Icons.hourglass_empty,
+                                  size: 20,
+                                  color: Colors.orange,
+                                )
+                              : const Icon(
+                                  Icons.check_circle,
+                                  size: 20,
+                                  color: Colors.green,
+                                ),
+                          const SizedBox(width: 4),
+                        ],
+                      ),
+                    ],
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,

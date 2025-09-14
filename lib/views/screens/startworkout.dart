@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:fitmeter/helper/duration_helper.dart';
 import 'package:fitmeter/providers/workouts_provider.dart';
 import 'package:fitmeter/views/screens/workouts.dart';
 import 'package:flutter/material.dart';
@@ -36,32 +37,14 @@ class _StartWorkoutPageState extends ConsumerState<StartWorkoutPage> {
     await _player.play(AssetSource("audio/countdown.mp3"));
   }
 
-  /// Convert hh:mm:ss string to total seconds
-  int _parseDuration(String duration) {
-    final parts = duration.split(':').map(int.parse).toList();
-    if (parts.length == 3) {
-      final hours = parts[0];
-      final minutes = parts[1];
-      final seconds = parts[2];
-      return hours * 3600 + minutes * 60 + seconds;
-    }
-    return 0;
-  }
-
-  /// Format seconds back into hh:mm:ss
-  String _formatTime(int seconds) {
-    final hours = (seconds ~/ 3600).toString().padLeft(2, '0');
-    final minutes = ((seconds % 3600) ~/ 60).toString().padLeft(2, '0');
-    final secs = (seconds % 60).toString().padLeft(2, '0');
-    return "$hours:$minutes:$secs";
-  }
-
   void _startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_countdownIndex == _messages.length - 1) {
         setState(() {
           _showWorkout = true;
-          _remainingSeconds = _parseDuration(widget.workout.duration);
+          _remainingSeconds = DurationHelper.parseDuration(
+            widget.workout.duration,
+          );
         });
         _timer?.cancel();
         _startWorkoutTimer();
@@ -147,7 +130,9 @@ class _StartWorkoutPageState extends ConsumerState<StartWorkoutPage> {
                             child: CircularProgressIndicator(
                               value:
                                   _remainingSeconds /
-                                  _parseDuration(workout.duration),
+                                  DurationHelper.parseDuration(
+                                    workout.duration,
+                                  ),
                               strokeWidth: 12,
                               backgroundColor: Colors.white24,
                               valueColor: const AlwaysStoppedAnimation<Color>(
@@ -178,12 +163,13 @@ class _StartWorkoutPageState extends ConsumerState<StartWorkoutPage> {
                                                 ref,
                                                 workout.id,
                                               );
-                                              Navigator.pushReplacement(
+                                              Navigator.pushAndRemoveUntil(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (_) =>
                                                       const WorkoutsPage(),
                                                 ),
+                                                (route) => false,
                                               );
                                             },
                                             icon: const Icon(
@@ -206,7 +192,9 @@ class _StartWorkoutPageState extends ConsumerState<StartWorkoutPage> {
                                       ),
                                     )
                                   : Text(
-                                      _formatTime(_remainingSeconds),
+                                      DurationHelper.formatTime(
+                                        _remainingSeconds,
+                                      ),
                                       style: const TextStyle(
                                         fontSize: 48,
                                         fontWeight: FontWeight.bold,

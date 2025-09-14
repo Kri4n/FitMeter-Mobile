@@ -22,7 +22,7 @@ class _WorkoutFormState extends State<WorkoutForm> {
     super.initState();
     _nameController = TextEditingController(text: widget.workout?.name ?? "");
     _durationController = TextEditingController(
-      text: widget.workout?.duration ?? "00:00:00",
+      text: widget.workout?.duration ?? "",
     );
   }
 
@@ -168,6 +168,10 @@ class _WorkoutFormState extends State<WorkoutForm> {
                 labelText: "Duration",
                 border: OutlineInputBorder(),
               ),
+              validator: (value) =>
+                  (value == null || value.trim().isEmpty || value == "00:00:00")
+                  ? "Duration required"
+                  : null,
             ),
           ],
         ),

@@ -10,10 +10,10 @@ final workoutsProvider = FutureProvider<List<WorkoutsModel>>((ref) async {
 /// StateNotifier for CRUD operations
 class WorkoutsNotifier extends StateNotifier<AsyncValue<List<WorkoutsModel>>> {
   WorkoutsNotifier() : super(const AsyncValue.loading()) {
-    _loadWorkouts();
+    loadWorkouts();
   }
 
-  Future<void> _loadWorkouts() async {
+  Future<void> loadWorkouts() async {
     try {
       final workouts = await ApiService.fetchWorkouts();
       state = AsyncValue.data(workouts);
@@ -25,7 +25,7 @@ class WorkoutsNotifier extends StateNotifier<AsyncValue<List<WorkoutsModel>>> {
   Future<void> addWorkout(String name, String duration) async {
     try {
       await ApiService.addWorkout(name, duration);
-      _loadWorkouts();
+      loadWorkouts();
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -34,7 +34,7 @@ class WorkoutsNotifier extends StateNotifier<AsyncValue<List<WorkoutsModel>>> {
   Future<void> updateWorkout(String id, String name, String duration) async {
     try {
       await ApiService.updateWorkout(id, name, duration);
-      _loadWorkouts();
+      loadWorkouts();
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -43,7 +43,7 @@ class WorkoutsNotifier extends StateNotifier<AsyncValue<List<WorkoutsModel>>> {
   Future<void> deleteWorkout(String id) async {
     try {
       await ApiService.deleteWorkout(id);
-      _loadWorkouts();
+      loadWorkouts();
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -52,7 +52,7 @@ class WorkoutsNotifier extends StateNotifier<AsyncValue<List<WorkoutsModel>>> {
   Future<void> completeWorkout(String id) async {
     try {
       await ApiService.completeWorkout(id);
-      _loadWorkouts();
+      loadWorkouts();
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fitmeter/data/api_routes.dart';
 import 'package:fitmeter/providers/auth_provider.dart';
+import 'package:fitmeter/providers/workouts_provider.dart';
 import 'package:fitmeter/utils/flutter_secure_storage.dart';
 import 'package:fitmeter/views/screens/register.dart';
 import 'package:fitmeter/views/screens/workouts.dart';
@@ -72,6 +73,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       await SecureStorage.saveToken(accessToken: token);
 
       clearLoginForm(emailValue, passwordValue);
+
+      // Loads the workouts data of the user before navigating to the workouts page
+      await ref.read(workoutsNotifierProvider.notifier).loadWorkouts();
 
       // Navigate to WorkoutsPage after login
       if (!mounted) return; // check if widget is still in the tree
