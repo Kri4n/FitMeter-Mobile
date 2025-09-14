@@ -110,42 +110,34 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListTile(
-                  title: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: workout.name,
+                  title: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          workout.name,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
+                          overflow: TextOverflow
+                              .ellipsis, // avoid overflow if name is long
                         ),
-                        const WidgetSpan(
-                          child: Spacer(), // pushes status to the right
+                      ),
+                      const SizedBox(width: 6), // small spacing
+                      if (workout.status.toLowerCase() == "pending")
+                        const Icon(
+                          Icons.access_time,
+                          size: 16,
+                          color: Colors.amberAccent,
+                        )
+                      else
+                        const Icon(
+                          Icons.check_circle,
+                          size: 16,
+                          color: Colors.green,
                         ),
-                        WidgetSpan(
-                          alignment: PlaceholderAlignment.middle,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(width: 3),
-                              workout.status.toLowerCase() == "pending"
-                                  ? const Icon(
-                                      Icons.access_time,
-                                      size: 16,
-                                      color: Colors.amberAccent,
-                                    )
-                                  : const Icon(
-                                      Icons.check_circle,
-                                      size: 16,
-                                      color: Colors.green,
-                                    ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
 
                   subtitle: Column(
