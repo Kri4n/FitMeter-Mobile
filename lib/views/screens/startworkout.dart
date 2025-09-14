@@ -92,7 +92,10 @@ class _StartWorkoutPageState extends ConsumerState<StartWorkoutPage> {
       appBar: AppBar(
         title: Text(
           "Start ${workout.name}",
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: const Color(0xFF111827),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -116,7 +119,7 @@ class _StartWorkoutPageState extends ConsumerState<StartWorkoutPage> {
                         "Workout Started!",
                         style: const TextStyle(
                           fontSize: 28,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
@@ -162,6 +165,17 @@ class _StartWorkoutPageState extends ConsumerState<StartWorkoutPage> {
                                                 context,
                                                 ref,
                                                 workout.id,
+                                              );
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Workout Completed',
+                                                  ),
+                                                  backgroundColor:
+                                                      Colors.green, // optional
+                                                ),
                                               );
                                               Navigator.pushAndRemoveUntil(
                                                 context,

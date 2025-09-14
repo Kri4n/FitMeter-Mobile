@@ -59,7 +59,14 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
           children: [
             Image.asset('assets/fitmeter-logo.png', height: 30),
             const SizedBox(width: 8),
-            const Text("FitMeter", style: TextStyle(color: Colors.white)),
+            const Text(
+              "FitMeter",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
         backgroundColor: const Color(0xFF111827),
@@ -92,11 +99,6 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
       backgroundColor: Colors.indigo,
       body: workoutsState.when(
         data: (workouts) {
-          if (workouts.isEmpty) {
-            return const Center(
-              child: Text("No Workouts", style: TextStyle(color: Colors.white)),
-            );
-          }
           return ListView.builder(
             padding: const EdgeInsets.all(8),
             itemCount: workouts.length,
@@ -108,10 +110,44 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListTile(
-                  title: Text(
-                    workout.name,
-                    style: const TextStyle(color: Colors.white),
+                  title: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: workout.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const WidgetSpan(
+                          child: Spacer(), // pushes status to the right
+                        ),
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(width: 3),
+                              workout.status.toLowerCase() == "pending"
+                                  ? const Icon(
+                                      Icons.access_time,
+                                      size: 16,
+                                      color: Colors.amberAccent,
+                                    )
+                                  : const Icon(
+                                      Icons.check_circle,
+                                      size: 16,
+                                      color: Colors.green,
+                                    ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -119,24 +155,9 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
                         workout.duration,
                         style: const TextStyle(color: Colors.white70),
                       ),
-                      Row(
-                        children: [
-                          workout.status.toLowerCase() == "pending"
-                              ? const Icon(
-                                  Icons.hourglass_empty,
-                                  size: 20,
-                                  color: Colors.orange,
-                                )
-                              : const Icon(
-                                  Icons.check_circle,
-                                  size: 20,
-                                  color: Colors.green,
-                                ),
-                          const SizedBox(width: 4),
-                        ],
-                      ),
                     ],
                   ),
+
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -197,7 +218,21 @@ class _WorkoutsPageState extends ConsumerState<WorkoutsPage> {
         loading: () =>
             const Center(child: CircularProgressIndicator(color: Colors.white)),
         error: (e, _) => const Center(
-          child: Text("No Workouts", style: TextStyle(color: Colors.white)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.fitness_center_rounded,
+                size: 100,
+                color: Colors.white,
+              ),
+              SizedBox(height: 8),
+              Text(
+                "No Workouts",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Padding(
